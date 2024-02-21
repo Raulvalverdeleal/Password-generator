@@ -7,50 +7,52 @@
 
 #include "file_actions.hpp"
 #include "item.hpp"
+#include <iostream>
 
 extern Item item;
 File_actions file_actions;
 
-void File_actions::getContent(){
+void File_actions::getContent(const std::string& filename){
 
-    std::ifstream file(this->getFileName());
+    std::ifstream file(filename);
     if (!file.is_open()) {
-        std::ofstream create_file(this->getFileName());
+        std::ofstream create_file(filename);
     }
 
     std::string jsonData((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     if (jsonData.empty())
-        this->m_doc.SetObject();
+        m_doc.SetObject();
     
-    this->m_doc.Parse(jsonData.c_str());
+    m_doc.Parse(jsonData.c_str());
     file.close();
 }
 void File_actions::setContent(){
-    std::ofstream file((this->getFileName()));
-
-    // TODO: manejar errores
-    // if (!file.is_open()) {
-    //     throw std::runtime_error("setContent.");
-    // }
-    
+    std::ofstream file(m_file_name);
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
-    this->m_doc.Accept(writer);
+    m_doc.Accept(writer);
     file << buffer.GetString();
     file.close();
 }
+void File_actions::readContent(const std::string& filename){
+    getContent(filename);
+    for (Value::ConstMemberIterator itr = m_doc.MemberBegin(); itr != m_doc.MemberEnd(); ++itr){
+        std::cout << "\t\033[1;32m" << itr->name.GetString() << "\t\033[1;90m" << itr->value["text"].GetString() << '\n';
+    }
+}
+
 
 bool File_actions::findItem(){
-    this->getContent();
-    auto search = this->m_doc.FindMember(item.getKey().c_str());
-    if (search != this->m_doc.MemberEnd()){
+    getContent(m_file_name);
+    auto search = m_doc.FindMember(item.getKey().c_str());
+    if (search != m_doc.MemberEnd()){
         return true;
     } else return false;
 }
 void File_actions::getItem(){
-    this->getContent();
-    auto search = this->m_doc.FindMember(item.getKey().c_str());
-    if (search != this->m_doc.MemberEnd()) {
+    getContent(m_file_name);
+    auto search = m_doc.FindMember(item.getKey().c_str());
+    if (search != m_doc.MemberEnd()) {
         item.setText(search->value["text"].GetString());
         item.setSeed({
             search->value["seed"].GetArray()[0].GetInt(),
@@ -60,31 +62,25 @@ void File_actions::getItem(){
     }
     // state after this will be 2 if finded.
 }
-
 void File_actions::addItem(){
-    this->getContent();
+    getContent(m_file_name);
 
     Value new_member(kObjectType);
     new_member.AddMember("text",
-        Value().SetString(item.getText().c_str(), item.getText().size(), this->m_doc.GetAllocator()),
-        this->m_doc.GetAllocator()
+        Value().SetString(item.getText().c_str(), item.getText().size(), m_doc.GetAllocator()),
+        m_doc.GetAllocator()
     );
     Value seed_arr(kArrayType);
     for (int seed : item.getSeed()){
-        seed_arr.PushBack(seed, this->m_doc.GetAllocator());
+        seed_arr.PushBack(seed, m_doc.GetAllocator());
     }
-    new_member.AddMember("seed", seed_arr, this->m_doc.GetAllocator());
+    new_member.AddMember("seed", seed_arr, m_doc.GetAllocator());
 
-    this->m_doc.AddMember(Value(item.getKey().c_str(), this->m_doc.GetAllocator()), new_member, this->m_doc.GetAllocator());
-    this->setContent();
+    m_doc.AddMember(Value(item.getKey().c_str(), m_doc.GetAllocator()), new_member, m_doc.GetAllocator());
+    setContent();
 }
-void File_actions::updateItem(){
-    this->getContent();
-}
-
 void File_actions::deleteItem(){
-    this->getContent();
-    this->m_doc.RemoveMember(item.getKey().c_str());
-    this->setContent();
+    getContent(m_file_name);
+    m_doc.RemoveMember(item.getKey().c_str());
+    setContent();
 }
-void File_actions::deleteAll(){ std::filesystem::remove(this->m_file_name); }

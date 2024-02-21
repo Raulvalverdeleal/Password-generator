@@ -34,9 +34,9 @@ public:
     const std::string& getKey(){ return m_key; }
     const int getState(){ return m_state; }
 
-    void setText ( std::string text ){ m_text = text; updateState();}
-    void setSeed ( std::array<int, 3> seed ){ m_seed = seed;}
-    void setKey ( std::string key ){ m_key = key; updateState();}
+    void setText ( const std::string& text ){ m_text = text; updateState();}
+    void setSeed ( const std::array<int, 3>& seed ){ m_seed = seed;}
+    void setKey ( const std::string& key ){ m_key = key; updateState();}
 
     void updateState();
 

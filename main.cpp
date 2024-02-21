@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     extern Handler handler;
 
-    if ( (argc > 1 && argc < 5) && (argc == 2 || argc == 4)) {
+    if ((argv[1][0] != '-') && (argc > 1 && argc < 5) && (argc == 2 || argc == 4)) {
         //i -> pw <key> || -file <file_name>
         handler.validateValue( argv[1], 2);
         if ( argc > 3 && std::string(argv[3]).compare("-file") == 0 ) handler.validateValue( argv[3], 3);
@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
         //i-> pw -list || -file <file_name>
         if ( argc > 2 && std::string(argv[2]).compare("-file") == 0 ) handler.validateValue( argv[3], 3);
         handler.takeAction(5);
+
     } else if ( (argc > 1 && argc < 3) && (std::string(argv[1]).compare("-h") == 0 || std::string(argv[1]).compare("-help") == 0)) {
         std::cout
         << "\n\033[1;90m---   PARAMS USE   ---\n\n\033[1;90m"
@@ -43,7 +44,7 @@ int main(int argc, char *argv[])
         << "-delete\n-> \033[0mDeletes all \033[1;90m./jsons/\033[1;90m content.\n\n"
         << "-delete -file <file_name>\n-> \033[0mDeletes \033[1;90m./jsons/file_name.json\033[1;90m\n\n"
         << "-list\n-> \033[0mReads all keys stored in \033[1;90m./jsons/\n\n"
-        << "-list -file <file_name>\n-> \033[0mReads all keys stored in \033[1;90m./jsons/file_name.json\033[0m";
+        << "-list -file <file_name>\n-> \033[0mReads all keys stored in \033[1;90m./jsons/file_name.json\033[0m\n\n";
     } else {
         std::cout << "\n\033[1;31mError: \033[0m param combination not found, enter \033[1;90m-h\033[0m or \033[1;90m-help\033[0m for help.\n\n";
     }

@@ -1,9 +1,3 @@
-//
-//  handler.cpp
-//  pw
-//
-//  Created by Raul Valverde leal on 20/2/24.
-//
 #include <regex>
 #include <filesystem>
 #include <iostream>
@@ -71,8 +65,8 @@ void Handler::validateValue(const std::string& value, int mode){
 
 void Handler::takeAction(int x){
 
-    if(!std::filesystem::exists(std::string("./jsons").c_str()))
-        std::filesystem::create_directory(std::string("./jsons").c_str());
+    if(!std::filesystem::exists(std::string("./pw-jsons").c_str()))
+        std::filesystem::create_directory(std::string("./pw-jsons").c_str());
 
     bool itemFinded { file_actions.findItem() };
 
@@ -87,7 +81,7 @@ void Handler::takeAction(int x){
             
             std::cout << '\n' << item << '\n' << encrypter;
 
-        } else std::cout << "\n\033[1;31mError: \033[0m" << item.getKey() << " \033[1;90mnot found.\n";
+        } else std::cout << "\n\033[1;31mError: \033[0m" << item.getKey() << " \033[1;90mnot found.\n\n";
         break;
     
     case 2:
@@ -128,18 +122,27 @@ void Handler::takeAction(int x){
         break;
 
     case 4:
-        // delete all / delete file
-        if (std::filesystem::exists(file_actions.getFileName())) {
-            file_actions.deleteAll();
-            std::cout << "\n\033[1;32mSuccess: " << file_actions.getFileName() << " \033[1;90mdeleted\033[0m\n\n";
-        } else std::cout << "\n\033[1;31mError: \033[0m" << file_actions.getFileName() << " \033[1;90mnot found.\n";
+        //if file not setted: deletes folder | if file setted: deletes file in folder
+        if (!file_actions.getNameSetted()) {
+            std::filesystem::remove_all(std::string("./pw-jsons"));
+            std::cout << "\n\033[1;32mSuccess: \033[1;90m./pw-jsons deleted\033[0m\n\n";      
+        } else if (std::filesystem::exists(file_actions.getFileName())){
+            std::filesystem::remove(std::string(file_actions.getFileName()));
+            std::cout << "\n\033[1;32mSuccess:\033[1;90m " << file_actions.getFileName() << " deleted\033[0m\n\n";
+        } else std::cout << "\n\033[1;31mError:\033[1;90m " << file_actions.getFileName() << " mnot found.\033[0m\n\n";
         break;
     
     case 5:
-        // read all / read file
-        if (std::filesystem::exists(file_actions.getFileName())) {
-
-        }else std::cout << "\n\033[1;31mError: \033[0m" << file_actions.getFileName() << " \033[1;90mnot found.\n";
+        if (file_actions.getNameSetted()){
+            std::cout << "\n\033[1;90mFile: " << file_actions.getFileName() << '\n';
+            file_actions.readContent(file_actions.getFileName());
+        }else {
+            for (auto const& dir_entry : std::filesystem::directory_iterator(std::string("./pw-jsons"))){
+                std::cout << "\n\033[1;90mFile: " << dir_entry.path() << '\n';
+                file_actions.readContent(dir_entry.path());
+            }
+        }
+        std::cout << "\n\033[0m";
     break;
 
     default:
