@@ -18,7 +18,7 @@ Handler handler;
 void Handler::validateValue(const std::string& value, int mode){
 
     std::array<std::regex, 4> regexes = {
-        std::regex("[a-z\\d]{8,12}"),
+        std::regex("[a-z\\d]{8,}"),
         std::regex("(\\d{2}\\.){2}\\d{2}"),
         std::regex("[a-zñ]{1,3}"),
         std::regex("[a-zA-Z\\d_-]{0,20}")
@@ -29,7 +29,7 @@ void Handler::validateValue(const std::string& value, int mode){
         std::string newValue;
         std::cout << "\n\033[1;31m" << value << "\033[0m does not match: \033[1;32m" <<
         (
-        mode == 0 ? "[a-z\\d]{8,12}" :
+        mode == 0 ? "[a-z\\d]{8,20}" :
         mode == 1 ? "(\\d{2}\\.){2}\\d{2}" :
         mode == 2 ? "[a-z]{1,3}" :
         "[a-zA-Z\\d-_]{0,20}"
