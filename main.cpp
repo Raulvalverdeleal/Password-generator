@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
 {
     extern Handler handler;
 
-    if ((argv[1][0] != '-') && (argc > 1 && argc < 5) && (argc == 2 || argc == 4)) {
+    if ((argc > 1 && argc < 5) && (argc == 2 || argc == 4) && (argv[1][0] != '-')) {
         //i -> pw <key> || -file <file_name>
         handler.validateValue( argv[1], 2);
         if ( argc > 3 && std::string(argv[3]).compare("-file") == 0 ) handler.validateValue( argv[3], 3);
@@ -51,3 +51,5 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+// g++ -std=c++20 -o pw main.cpp handler.cpp file_actions.cpp encrypter.cpp clipboard.cpp item.cpp

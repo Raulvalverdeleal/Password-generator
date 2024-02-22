@@ -27,7 +27,7 @@ void File_actions::getContent(const std::string& filename){
     file.close();
 }
 void File_actions::setContent(){
-    std::ofstream file(m_file_name);
+    std::ofstream file(m_full_name);
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
     m_doc.Accept(writer);
@@ -43,14 +43,14 @@ void File_actions::readContent(const std::string& filename){
 
 
 bool File_actions::findItem(){
-    getContent(m_file_name);
+    getContent(m_full_name);
     auto search = m_doc.FindMember(item.getKey().c_str());
     if (search != m_doc.MemberEnd()){
         return true;
     } else return false;
 }
 void File_actions::getItem(){
-    getContent(m_file_name);
+    getContent(m_full_name);
     auto search = m_doc.FindMember(item.getKey().c_str());
     if (search != m_doc.MemberEnd()) {
         item.setText(search->value["text"].GetString());
@@ -63,7 +63,7 @@ void File_actions::getItem(){
     // state after this will be 2 if finded.
 }
 void File_actions::addItem(){
-    getContent(m_file_name);
+    getContent(m_full_name);
 
     Value new_member(kObjectType);
     new_member.AddMember("text",
@@ -80,7 +80,7 @@ void File_actions::addItem(){
     setContent();
 }
 void File_actions::deleteItem(){
-    getContent(m_file_name);
+    getContent(m_full_name);
     m_doc.RemoveMember(item.getKey().c_str());
     setContent();
 }
