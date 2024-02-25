@@ -1,10 +1,4 @@
-//
-//  handler.hpp
-//  pw
-//
-//  Created by Raul Valverde leal on 20/2/24.
-//
-
+#pragma once
 #ifndef handler_hpp
 #define handler_hpp
 
@@ -15,7 +9,7 @@ class Handler
 
 public:
     void validateValue(const std::string& value, int mode);
-    void takeAction(int x);
+    void takeAction(int x, bool search);
 };
 
-#endif /* handler_hpp */
+#endif

@@ -1,10 +1,4 @@
-//
-//  file_actions.hpp
-//  pw
-//
-//  Created by Raul Valverde leal on 20/2/24.
-//
-
+#pragma once
 #ifndef file_actions_hpp
 #define file_actions_hpp
 
@@ -21,38 +15,36 @@ using namespace rapidjson;
 class File_actions{
     private:
         std::string m_home;
-        std::string m_file_name { m_home + "/default.json" };
+        std::string m_file_name;
         std::string m_full_name;
         Document m_doc {};
-        bool m_name_setted { false };
 
     public:
-        File_actions() {
+        File_actions() : m_file_name{ "default.json" } {
             const char *homeDir = getenv("HOME");
             if (homeDir != nullptr)
-                m_home = std::string(homeDir) + "/pw-jsons";
+                m_home = std::string(homeDir) + "/.pg-jsons";
             else
-                m_home = "./pw-jsons";
-            m_full_name = m_home + m_file_name;
+                m_home = "./.pg-jsons";
+            m_full_name = m_home + '/' + m_file_name;
         }
 
         void getContent(const std::string& filename);
+        void readContent(const std::string& filename);
         void setContent();
 
         bool findItem();
-        void getItem();
+        void getItem(bool update);
         void addItem();
         void deleteItem();
-        void readContent(const std::string& filename);
 
         void setFileName( std::string new_file_name ){
-            m_file_name =  m_home + new_file_name + ".json";
-            m_name_setted = true;
+            m_file_name = new_file_name + ".json";
+            m_full_name = m_home + '/' + new_file_name;
         }
         const std::string& getFileName(){ return m_file_name; }
         const std::string& getHomeDir(){ return m_home; }
         const std::string& getFullName(){ return m_full_name; }
-        const bool getNameSetted(){ return m_name_setted; }
 };
 
-#endif /* file_actions_hpp */
+#endif

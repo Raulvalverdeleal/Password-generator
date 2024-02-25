@@ -1,10 +1,3 @@
-//
-//  file_actions.cpp
-//  pw
-//
-//  Created by Raul Valverde leal on 20/2/24.
-//
-
 #include "file_actions.hpp"
 #include "item.hpp"
 #include <iostream>
@@ -37,7 +30,7 @@ void File_actions::setContent(){
 void File_actions::readContent(const std::string& filename){
     getContent(filename);
     for (Value::ConstMemberIterator itr = m_doc.MemberBegin(); itr != m_doc.MemberEnd(); ++itr){
-        std::cout << "\t\033[1;32m" << itr->name.GetString() << "\t\033[1;90m" << itr->value["text"].GetString() << '\n';
+        std::cout << "\t\033[1;32m\u2192  " << itr->name.GetString() << "\t\033[0m" << itr->value["text"].GetString() << '\n';
     }
 }
 
@@ -49,7 +42,7 @@ bool File_actions::findItem(){
         return true;
     } else return false;
 }
-void File_actions::getItem(){
+void File_actions::getItem(bool update){
     getContent(m_full_name);
     auto search = m_doc.FindMember(item.getKey().c_str());
     if (search != m_doc.MemberEnd()) {
@@ -60,7 +53,17 @@ void File_actions::getItem(){
             search->value["seed"].GetArray()[2].GetInt()
         });
     }
-    // state after this will be 2 if finded.
+    if (update && search != m_doc.MemberEnd()) {
+        rapidjson::Value& seedArray = search->value["seed"];
+        std::cout << "\n\033[1;32m \u2714 \033[0mUpdated from: \033[1;90m" << item.getSeedInt(0) << '.' << item.getSeedInt(1) << '.' << item.getSeedInt(2) << "\033[0m To: " ;
+        for (int i = 0; i < 3; i++) {
+            int newValue = item.getSeedInt(i) + 1 > 99 ? 0 : item.getSeedInt(i) + 1;
+            seedArray[i].SetInt(newValue);
+            item.setSeedInt(i, newValue);
+        }
+        std::cout << "\033[1;90m" << item.getSeedInt(0) << '.' << item.getSeedInt(1) << '.' << item.getSeedInt(2) << "\033[0m In: \033[1;90m" << file_actions.getFileName() << "\033[0m" ;
+        setContent();
+    }
 }
 void File_actions::addItem(){
     getContent(m_full_name);

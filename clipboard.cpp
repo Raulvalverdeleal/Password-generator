@@ -24,7 +24,7 @@ std::string Clipboard::paste()
 std::string Clipboard::copy(const char *new_clipboard)
 {
 	std::stringstream cmd;
-	cmd << "echo \"" << new_clipboard << "\" | pbcopy";
+	cmd << "printf \"" << new_clipboard << "\" | pbcopy";
 	return this->exec(cmd.str().c_str());
 }
 
